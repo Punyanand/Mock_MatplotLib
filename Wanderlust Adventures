@@ -1,0 +1,65 @@
+#csv
+import pandas as pd
+
+# Load the uploaded CSV file
+
+
+# Assuming the uploaded file is named 'travel.csv'
+df = pd.read_csv('travel.csv')
+df.head()
+
+df.head()
+
+#Line Plot
+import matplotlib.pyplot as plt
+
+# Prepare data for line plot: group by month
+monthly_data = df.groupby('Month').agg({'Travelers': 'sum', 'Revenue': 'sum'}).reset_index()
+
+# Ensure months are in calendar order
+months_order = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+monthly_data['Month'] = pd.Categorical(monthly_data['Month'], categories=months_order, ordered=True)
+monthly_data = monthly_data.sort_values('Month')
+
+# Line plot
+plt.figure(figsize=(10, 6))
+plt.plot(monthly_data['Month'], monthly_data['Travelers'], marker='o', label='Travelers')
+plt.plot(monthly_data['Month'], monthly_data['Revenue'], marker='s', label='Revenue')
+plt.title('Monthly Traveler Count and Revenue')
+plt.xlabel('Month')
+plt.ylabel('Count / Revenue')
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+#Pie Chart
+# Prepare data for pie chart: total travelers by destination
+destination_data = df.groupby('Destination')['Travelers'].sum().sort_values(ascending=False).head(5)
+
+# Pie chart
+plt.figure(figsize=(8, 8))
+plt.pie(destination_data, labels=destination_data.index, autopct='%1.1f%%', startangle=140)
+plt.title('Traveler Distribution Among Top 5 Destinations')
+plt.axis('equal')  # Equal aspect ratio ensures pie is drawn as a circle
+plt.tight_layout()
+plt.show()
+
+#Scatter Plot
+# Prepare data for scatter plot: already grouped by month
+x = monthly_data['Travelers']
+y = monthly_data['Revenue']
+
+# Scatter plot
+plt.figure(figsize=(8, 6))
+plt.scatter(x, y, color='teal')
+for i, month in enumerate(monthly_data['Month']):
+    plt.text(x.iloc[i], y.iloc[i], month, fontsize=9, ha='right')
+
+plt.title('Travelers vs Revenue (Monthly)')
+plt.xlabel('Number of Travelers')
+plt.ylabel('Revenue')
+plt.grid(True)
+plt.tight_layout()
+plt.show()
